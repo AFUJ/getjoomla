@@ -2,7 +2,7 @@
 
 ![Banner](./banner.svg)
 
-Compatible up to ![Joomla 5.1](https://img.shields.io/badge/joomla-5.1-brightgreen?style=flat)
+Compatible up to ![Joomla 6.0](https://img.shields.io/badge/joomla-6.0-brightgreen?style=flat)
 
 [English version](#english-version) - [Version francophone](#version-francophone)
 
