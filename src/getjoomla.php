@@ -195,7 +195,7 @@ class Installer
                 return '';
             }
             if ($tmp['tag_name'] == $latestofficial) {
-            // french version = official version, make it latest
+                // french version = official version, make it latest
                 $this->cache['latest'] = $tmp['tag_name'];
             }
         }
@@ -333,8 +333,9 @@ class Installer
         if ('' === $this->joomlaLatestVersion) {
             throw new \RuntimeException(
                 sprintf(
-                    'The URL %s has returned an empty string. Strange...',
-                    self::URL_VERSIONS_FR
+                    'Github has refused the connection and returned ' .
+                    'the following error message:<br/><strong>%s</strong>',
+                    $this->gitErrorMessage
                 )
             );
         }
