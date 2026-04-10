@@ -30,7 +30,7 @@ You'll get this screen:
 
 You'll be able to install the latest version of Joomla or an older one; just select the desired version from the list.
 
-Once you've select a version, the script will download the package from the repository of the [French AFUJ](https://github.com/AFUJ/joomla-cms-fr/).
+Once you've select a version, the script will download the package from the repository of the [French AFUJ](https://github.com/AFUJ/joomla-cms-fr/) when available, otherwise it takes it from the official [Joomla](https://github.com/joomla/joomla-cms).
 
 Depending on the speed of your internet connection, you just need to wait a few seconds before to see the well-known Joomla installation screen:
 
@@ -74,7 +74,7 @@ Vous obtiendrez cet écran :
 
 Vous pourrez installer la dernière version de Joomla ou une version plus ancienne ; il vous suffit de sélectionner la version souhaitée dans la liste.
 
-Une fois que vous avez sélectionné une version, le script téléchargera le paquet à partir du dépôt de l'AFUJ [https://github.com/AFUJ/joomla-cms-fr/](https://github.com/AFUJ/joomla-cms-fr/).
+Une fois que vous avez sélectionné une version, le script téléchargera le paquet à partir du dépôt de l'AFUJ [https://github.com/AFUJ/joomla-cms-fr/](https://github.com/AFUJ/joomla-cms-fr/) s'il est disponible, sinon il le prend sur la site officiel [Joomla](https://github.com/joomla/joomla-cms).
 
 Selon la vitesse de votre connexion Internet, il vous suffit d'attendre quelques secondes avant de voir l'écran d'installation bien connu de Joomla :
 
