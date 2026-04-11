@@ -4,6 +4,8 @@
  *
  * Script to download a Joomla package from the Github repository maintained by
  * the French AFUJ association (https://www.joomla.fr)
+ * If not found in the french repository, it will look for version in the
+ * international repository.
  *
  * php version 7.2./8.5
  *
@@ -23,7 +25,7 @@
 
 // phpcs:disable PSR1.Files.SideEffects
 
-namespace BestJoomla;
+namespace AFUJ;
 
 /**
  * GetJoomla installer class.
@@ -90,6 +92,13 @@ class Installer
         'latest'   => '',
     ];
 
+    /* Version PHP mini/maxi par version joomla
+    */
+    private $php_versions = [
+        '6' => ['mini' => '8.3', 'maxi' => null],
+        '5' => ['mini' => '8.1', 'maxi' => null],
+        '4' => ['mini' => '7.2', 'maxi' => '8.2']
+        ];
     /**
      * Constructor.
      */
@@ -207,14 +216,27 @@ class Installer
      * Download package, unpack it, install and redirect to
      * Joomla! installation page.
      *
-     * @param string $urlZip URL to Joomla! installation package.
+     * @param string choice => $version Joomla,$urlZip URL to Joomla! installation package.
      *
      * @throws \Exception
      *
      * @return void
      */
-    public function prepare(string $urlZip): void
+    public function prepare(string $choice): void
     {
+        $infos = explode(',', $choice);
+        $version = explode('.', $infos[0]);
+        $phpreq = $this->php_versions[$version[0]];
+        if (version_compare(PHP_VERSION, $phpreq['mini'], '<')) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Joomla! version %s , incompatible PHP version : found  <strong>' . PHP_VERSION . '</strong>, Minimum <strong>' . $phpreq['mini'] . '</strong>',
+                    $infos[0]
+                ),
+                502
+            );
+        }
+        $urlZip = $infos[1];
         $path = __DIR__ . '/joomla.zip';
 
         // Download zip only if not yet there
@@ -368,7 +390,7 @@ class Installer
             if ($version !== $this->joomlaLatestVersion) {
                 $options .= sprintf(
                     '<option value="%s">%s</option>',
-                    $item[1],
+                    $version.','.$item[1],
                     $item[0]
                 );
             }
@@ -388,7 +410,7 @@ class Installer
 
         return sprintf(
             '<option value="%s" style="font-weight:700">%s</option>',
-            $item[1],
+            $this->joomlaLatestVersion.','.$item[1],
             $item[0]
         );
     }
@@ -1013,7 +1035,7 @@ class Installer
         <div class="container">
 
             <div class="jumbotron text-center">
-                <h1>getJoomla <small>v1.2.0 FR</small></h1>
+                <h1>getJoomla <small>v1.2.1 FR</small></h1>
                 <p class="lead">Un script incroyable pour télécharger et préparer l'installation de Joomla!.</p>
                 <p><small>
                     <a href="https://github.com/AFUJ/getjoomla">https://github.com/AFUJ/getjoomla</a>
@@ -1042,7 +1064,7 @@ class Installer
                             <optgroup label="Dernière version">
                                 <?php echo $installer->getLatestsVersionOptions();?>
                             </optgroup>
-                            <optgroup label="Autre version">
+                            <optgroup label="Autres versions">
                                 <?php echo $installer->getVersionsOptions(); ?>
                             </optgroup>
                         </select>
@@ -1057,8 +1079,10 @@ class Installer
                 <div class="col-lg-6">
                     <h4>Le fonctionnement</h4>
                     <p>Ce script télécharge la version francophone de Joomla géré par l'AFUJ depuis
-                        <a href="https://github.com/AFUJ/joomla-cms-fr/releases">le compte Github</a>, il décompresse
-                        l'archive, s'autodétruit et redirige vers l'installateur de joomla.
+                        <a href="https://github.com/AFUJ/joomla-cms-fr/releases" target="_blank">le compte Github</a>. 
+                        Si la version française n'est pas disponible, il propose les versions depuis 
+                        <a href="https://github.com/joomla/joomla-cms/releases" target="_blank">le github international</a>.
+                        Il décompresse l'archive, s'autodétruit et redirige vers l'installateur de Joomla.
                         En résumé : Sélectionnez et cliquez pour installer la dernière version de Joomla!.</p>
                 </div>
 
@@ -1076,7 +1100,7 @@ class Installer
             </div>
 
             <footer class="footer">
-                <p>&copy; 2016 Script initial de BestProject - Traduction et adaption avec le package
+                <p>&copy; 2026 Script initial de BestProject - Traduction et adaption avec le package
                     français par Yann Gomiero, refactoring par Christophe Avonture - AFUJ</p>
             </footer>
 
