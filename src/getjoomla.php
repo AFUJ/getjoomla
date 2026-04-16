@@ -89,7 +89,7 @@ class Installer
      */
     private $cache = [
         'versions' => [],
-        'latest'   => '',
+        'latest'   => [],
     ];
 
     /* Version PHP mini/maxi par version joomla
@@ -178,9 +178,9 @@ class Installer
      *
      * @return string
      */
-    public function getLatestVersion(): string
+    public function getLatestVersion(): array
     {
-        if ('' === $this->cache['latest']) {
+        if (empty($this->cache['latest'])) {
             // get latest official version
             $buffer = $this->getURLContents(self::URL_VERSIONS . '/latest');
 
@@ -189,10 +189,10 @@ class Installer
             if (isset($tmp['message'])) {
                 $this->gitErrorMessage = $tmp['message'];
 
-                return '';
+                return [];
             }
             $latestofficial = $tmp['tag_name'];
-            $this->cache['latest'] = $tmp['name'];
+            $this->cache['latest'] = [$latestofficial,$tmp['name'],$tmp['upload_url']];
             // get latest french version
             $buffer = $this->getURLContents(self::URL_VERSIONS_FR . '/latest');
 
@@ -201,14 +201,13 @@ class Installer
             if (isset($tmp['message'])) {
                 $this->gitErrorMessage = $tmp['message'];
 
-                return '';
+                return [];
             }
             if ($tmp['tag_name'] == $latestofficial) {
                 // french version = official version, make it latest
-                $this->cache['latest'] = $tmp['tag_name'];
+                $this->cache['latest'] = [$latestofficial,$tmp['name'],$tmp['upload_url']];
             }
         }
-
         return $this->cache['latest'];
     }
 
@@ -352,7 +351,7 @@ class Installer
         // Try to retrieve the latest Joomla version from Github.
         $this->joomlaLatestVersion = $this->getLatestVersion();
 
-        if ('' === $this->joomlaLatestVersion) {
+        if (empty($this->joomlaLatestVersion)) {
             throw new \RuntimeException(
                 sprintf(
                     'Github has refused the connection and returned ' .
@@ -387,7 +386,7 @@ class Installer
         $options = '';
 
         foreach ($this->joomlaAllVersions as $version => $item) {
-            if ($version !== $this->joomlaLatestVersion) {
+            if ($version !== $this->joomlaLatestVersion[0]) {
                 $options .= sprintf(
                     '<option value="%s">%s</option>',
                     $version.','.$item[1],
@@ -406,11 +405,11 @@ class Installer
      */
     public function getLatestsVersionOptions(): string
     {
-        $item = $this->joomlaAllVersions[$this->joomlaLatestVersion];
+        $item = $this->joomlaAllVersions[$this->joomlaLatestVersion[0]];
 
         return sprintf(
             '<option value="%s" style="font-weight:700">%s</option>',
-            $this->joomlaLatestVersion.','.$item[1],
+            $this->joomlaLatestVersion[0].','.$item[1],
             $item[0]
         );
     }
@@ -425,12 +424,12 @@ class Installer
         //region Get the latest version cache
         $cache = $this->loadCacheFile('latest');
 
-        if ('' === $cache) {
+        if (empty($cache)) {
             // Try to retrieve the latest Joomla version from Github.
             $this->joomlaLatestVersion = $this->getLatestVersion();
             file_put_contents(__DIR__ . '/getjoomla.latest.cache', json_encode($this->joomlaLatestVersion));
         } else {
-            $this->joomlaLatestVersion = json_decode($cache);
+            $this->joomlaLatestVersion = $cache;
         }
 
         //endregion
@@ -438,12 +437,12 @@ class Installer
         //region Get the all versions cache
         $cache = $this->loadCacheFile('versions');
 
-        if ('' === $cache) {
+        if (empty($cache)) {
             // Try to retrieve the latest Joomla version from Github.
             $this->joomlaAllVersions = $this->getVersions();
             file_put_contents(__DIR__ . '/getjoomla.versions.cache', json_encode($this->joomlaAllVersions));
         } else {
-            $this->joomlaAllVersions = json_decode($cache, true);
+            $this->joomlaAllVersions = $cache;
         }
 
         //endregion
@@ -484,15 +483,16 @@ class Installer
      *
      * @return string Content of the file or empty string if obsolete
      */
-    private function loadCacheFile(string $name): string
+    private function loadCacheFile(string $name): array
     {
         $path = __DIR__ . '/getjoomla.' . $name . '.cache';
 
         if (file_exists($path) && (filemtime($path) > (time() - (60 * 15)))) {
-            return (string) file_get_contents($path);
+            $str = file_get_contents($path);
+            return (array) json_decode($str);
         }
 
-        return '';
+        return [];
     }
 
     /**
@@ -1035,7 +1035,7 @@ class Installer
         <div class="container">
 
             <div class="jumbotron text-center">
-                <h1>getJoomla <small>v1.2.1 FR</small></h1>
+                <h1>getJoomla <small>v1.2.2 FR</small></h1>
                 <p class="lead">Un script incroyable pour télécharger et préparer l'installation de Joomla!.</p>
                 <p><small>
                     <a href="https://github.com/AFUJ/getjoomla">https://github.com/AFUJ/getjoomla</a>
