@@ -163,7 +163,7 @@ class Installer
                             $url = $asset->browser_download_url;
                         }
                     }
-                    $this->cache['versions'][$version->tag_name] = [$version->name,$url];
+                    $this->cache['versions'][trim($version->tag_name, '-fr')] = [$version->name,$url];
                 }
             } catch (\Exception $exception) {
                 // Github has probably returned an error; capture it
@@ -203,7 +203,7 @@ class Installer
 
                 return [];
             }
-            if ($tmp['tag_name'] == $latestofficial) {
+            if (strpos($tmp['tag_name'], $latestofficial) !== false) {
                 // french version = official version, make it latest
                 $this->cache['latest'] = [$latestofficial,$tmp['name'],$tmp['upload_url']];
             }
@@ -1035,7 +1035,7 @@ class Installer
         <div class="container">
 
             <div class="jumbotron text-center">
-                <h1>getJoomla <small>v1.2.2 FR</small></h1>
+                <h1>getJoomla <small>v1.2.3 FR</small></h1>
                 <p class="lead">Un script incroyable pour télécharger et préparer l'installation de Joomla!.</p>
                 <p><small>
                     <a href="https://github.com/AFUJ/getjoomla">https://github.com/AFUJ/getjoomla</a>
